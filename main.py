@@ -66,7 +66,16 @@ def save_data_from_form(data):
         data_parse = urllib.parse.unquote_plus(data.decode())
         data_dict = {key: value for key, value in [el.split('=') for el in data_parse.split('&')]}
         data_dict_json = {timer: data_dict}
-        with open('storage/data.json', 'a', encoding='utf-8') as file:
+
+        if Path('storage/data.json').exists():
+            with open('storage/data.json', 'r', encoding='utf-8') as file:
+                load_data = json.load(file)
+                
+                if load_data:
+                    for key, value in load_data.items():
+                        data_dict_json[key] = value
+
+        with open('storage/data.json', 'w', encoding='utf-8') as file:
             json.dump(data_dict_json, file, ensure_ascii=False, indent=4)
 
 def run_socket_server(host=SOCKET_HOST, port=SOCKET_PORT):
